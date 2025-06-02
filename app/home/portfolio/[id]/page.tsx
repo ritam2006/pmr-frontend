@@ -3,13 +3,7 @@ import PortfolioGraph from "@/app/components/PortfolioGraph";
 import PortfolioStatistic from "@/app/components/PortfolioStatistic";
 import { notFound } from "next/navigation";
 
-interface PortfolioPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function PortfolioPage({ params }: PortfolioPageProps) {
+export default async function PortfolioPage({ params }: any) {
   let portfolio;
   const id = params.id;
   const token = await getTokenFromCookie();

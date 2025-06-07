@@ -33,45 +33,35 @@ export default function SignUp() {
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
+      setIsLoading(false);
       return;
     }
 
     try {
-      const signupRes = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/auth/signup`, {
+      const signupRes = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
-        credentials: "include",
       });
 
       if (!signupRes.ok) {
-        const data = await signupRes.text();
-        let errorMessage = "Signup failed";
-        try {
-          const json = JSON.parse(data);
-          errorMessage = json.message || errorMessage;
-        } catch (_) {}
+        const errorData = await signupRes.json().catch(() => null);
+        const errorMessage = errorData?.message || "Signup failed";
         throw new Error(errorMessage);
       }
 
-      const signinRes = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/auth/signin`, {
+      const signinRes = await fetch("/api/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
-        credentials: "include",
       });
 
-      const signinData = await signinRes.text();
-
       if (!signinRes.ok) {
-        let errorMessage = "Signin failed";
-        try {
-          const json = JSON.parse(signinData);
-          errorMessage = json.message || errorMessage;
-        } catch (_) {}
+        const errorData = await signinRes.json().catch(() => null);
+        const errorMessage = errorData?.message || "Signin failed";
         throw new Error(errorMessage);
       }
-      
+
       router.push("/home");
     } catch (error: any) {
       setError(error.message);

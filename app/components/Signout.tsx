@@ -12,11 +12,7 @@ export default function SignOut() {
   const handleSignOut = async () => {
     setIsLoading(true);
 
-    await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/auth/signout`, {
-      method: 'POST',
-      credentials: 'include',
-    });
-
+    await fetch("/api/signout", { method: "POST" });
     router.push("/signin");
   }
 

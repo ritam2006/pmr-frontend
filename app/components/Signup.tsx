@@ -112,6 +112,10 @@ export default function SignUp() {
           Sign In
         </a>
       </p>
+      <p className="text-xs">
+        To keep this service running for free, the server will wind down after 15 minutes of inactivity.
+        Signing up may take up to a minute during these times. Afterwards, the server will be active again.
+      </p>
     </div>
   );
 }

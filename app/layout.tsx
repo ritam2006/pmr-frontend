@@ -4,7 +4,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Risk Master",
-  description: "Track your investments, explore assets, and understand portfolio risk, all in one place. A simple tool to help you make smarter financial decisions."
+  description: "This platform allows you to track investments, view key information about assets, and understand the overall risk of your (mock) portfolio. It’s designed to you make more informed decisions about how to manage your invested money.",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
  
 const mulish = Mulish({

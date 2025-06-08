@@ -89,7 +89,11 @@ export default function SignIn() {
       <p className="text-sm text-gray-500">
         Don't Have an Account?&nbsp;
         <a href="/signup" className="underline text-accent">Sign Up</a>
-        </p>
+      </p>
+      <p className="text-xs">
+        To keep this service running for free, the server will wind down after 15 minutes of inactivity.
+        Signing in may take up to a minute during these times. Afterwards, the server will be active again.
+      </p>
     </div>
   );
 }

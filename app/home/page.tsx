@@ -1,30 +1,54 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import PortfolioCard from "../components/PortfolioCard";
 import { getTokenFromCookie } from "../utils/getToken";
+import LoadingIcon from "../components/LoadingIcon";
 
-export default async function Home() {
-  let userPortfolios = [];
+type Portfolio = {
+  id: number;
+  name: string;
+  assets: { ticker: string; weight: number };
+  start: Date;
+  end: Date;
+  sharpe: number;
+  valueAtRisk: number;
+};
 
-  try {
-    const token = await getTokenFromCookie();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/userPortfolios`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-      cache: "no-store",
-    });
+export default function Home() {
+  const [userPortfolios, setUserPortfolios] = useState<Portfolio[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-    if (!res.ok) {
-      throw new Error(`Server responded with status ${res.status}`);
-    }
+  useEffect(() => {
+    const fetchPortfolios = async () => {
+      try {
+        const token = await getTokenFromCookie();
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT}/userPortfolios`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+        });
 
-    userPortfolios = await res.json();
-  } catch (error) {
-    console.error("Failed to load user portfolios:", error);
-    return <div className="text-red-500">Failed to load user portfolios</div>
-  }
+        if (!res.ok) {
+          throw new Error(`Server responded with status ${res.status}`);
+        }
+
+        const data = await res.json();
+        setUserPortfolios(data);
+      } catch (err) {
+        console.error("Failed to load user portfolios:", err);
+        setError("Failed to load user portfolios");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPortfolios();
+  }, []);
 
   return (
     <main className="space-y-10">
@@ -44,20 +68,11 @@ export default async function Home() {
 
       <div className="space-y-4">
         <h2 className="text-3xl md:text-4xl">Your Portfolios</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {userPortfolios.map(
-            (
-              portfolio: {
-                id: number;
-                name: string;
-                assets: { ticker: string; weight: number };
-                start: Date;
-                end: Date;
-                sharpe: number;
-                valueAtRisk: number;
-              },
-              index: number
-            ) => (
+        {loading ? 
+          <LoadingIcon className="w-32 h-32 mt-12 border-4 border-accent mx-auto" />
+          :
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {userPortfolios.map((portfolio, index) => (
               <PortfolioCard
                 key={index}
                 id={portfolio.id}
@@ -68,9 +83,9 @@ export default async function Home() {
                 sharpe={portfolio.sharpe}
                 valueAtRisk={portfolio.valueAtRisk}
               />
-            )
-          )}
-        </div>
+            ))}
+          </div>
+        }
       </div>
     </main>
   );
